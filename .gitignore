@@ -1,0 +1,31 @@
+#Dependencies
+node_modules/
+__pycache__/
+*.pyc 
+venv/
+.venv/
+
+#Data and models files 
+data/* 
+!data/.gitkeep 
+*.pkl
+*.joblib 
+*.h5 
+*.csv 
+
+#Environment variables 
+.env 
+.env.local 
+
+#Build output 
+dist/
+build/
+
+#os files 
+.DS_Store 
+Thumbs.db 
+
+#IDE 
+.vscode/
+.idea/
+
