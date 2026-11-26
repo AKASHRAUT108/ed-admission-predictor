@@ -1,16 +1,14 @@
 const express = require("express");
 const cors = require("cors");
+const { predictWithPython } = require("./pythonBridge");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// ------------------------------------------------------------------
-// Health check endpoint
-// ------------------------------------------------------------------
+// Health check
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
@@ -19,57 +17,33 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// ------------------------------------------------------------------
-// Prediction endpoint (placeholder — real model will be wired in later)
-// ------------------------------------------------------------------
-app.post("/api/predict", (req, res) => {
-  const {
-    age,
-    triage_level,
-    arrival_hour,
-    chief_complaint,
-    systolic_bp,
-    heart_rate,
-    temperature,
-    spo2,
-  } = req.body;
+// Prediction endpoint using the real Python model
+app.post("/api/predict", async (req, res) => {
+  const payload = req.body;
 
   // Basic validation
   if (
-    age === undefined ||
-    triage_level === undefined ||
-    chief_complaint === undefined
+    payload.age === undefined ||
+    payload.triage_level === undefined ||
+    payload.chief_complaint === undefined
   ) {
     return res.status(400).json({
       error: "Missing required fields: age, triage_level, chief_complaint",
     });
   }
 
-  // Placeholder prediction logic (will be replaced by real model)
-  // Simple heuristic: higher risk for older patients and lower triage levels
-  let riskScore = 0.3;
-  if (age > 60) riskScore += 0.2;
-  if (triage_level <= 2) riskScore += 0.3;
-  if (chief_complaint === "chest_pain") riskScore += 0.15;
-  if (spo2 !== undefined && spo2 < 92) riskScore += 0.2;
-
-  riskScore = Math.min(riskScore, 0.99);
-
-  res.json({
-    admission_probability: parseFloat(riskScore.toFixed(4)),
-    recommendation:
-      riskScore > 0.6
-        ? "High risk — reserve bed in advance"
-        : riskScore > 0.4
-        ? "Moderate risk — monitor closely"
-        : "Low risk — standard triage",
-    model_version: "placeholder-v1",
-  });
+  try {
+    const result = await predictWithPython(payload);
+    res.json(result);
+  } catch (err) {
+    console.error("Prediction error:", err.message);
+    res.status(500).json({
+      error: "Prediction failed",
+      detail: err.message,
+    });
+  }
 });
 
-// ------------------------------------------------------------------
-// Start server
-// ------------------------------------------------------------------
 app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);
   console.log(`Health check: http://localhost:${PORT}/api/health`);
