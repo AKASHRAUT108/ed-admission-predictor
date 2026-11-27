@@ -36,7 +36,6 @@ export default function App() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    // Placeholder — API call will be added in Block 3.2
     setResult({
       admission_probability: 0.0,
       recommendation: "API call not wired yet (Block 3.2)",
@@ -54,7 +53,6 @@ export default function App() {
       </header>
 
       <div className="layout">
-        {/* Form panel */}
         <form className="panel form-panel" onSubmit={handleSubmit}>
           <h2>Patient Intake</h2>
 
@@ -87,7 +85,7 @@ export default function App() {
           </div>
 
           <div className="field">
-            <label>Arrival Hour (0–23)</label>
+            <label>Arrival Hour (0-23)</label>
             <input
               type="number"
               name="arrival_hour"
@@ -136,7 +134,7 @@ export default function App() {
 
           <div className="field-row">
             <div className="field">
-              <label>Temperature (°C)</label>
+              <label>Temperature (C)</label>
               <input
                 type="number"
                 step="0.1"
@@ -146,7 +144,7 @@ export default function App() {
               />
             </div>
             <div className="field">
-              <label>SpO₂ (%)</label>
+              <label>SpO2 (%)</label>
               <input
                 type="number"
                 name="spo2"
@@ -161,7 +159,6 @@ export default function App() {
           </button>
         </form>
 
-        {/* Result panel */}
         <div className="panel result-panel">
           <h2>Prediction Result</h2>
 

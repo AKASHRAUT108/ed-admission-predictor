@@ -1,194 +1,151 @@
-import { useState } from "react";
-import "./App.css";
+* {
+  box-sizing: border-box;
+}
 
-const initialForm = {
-  age: 65,
-  triage_level: 3,
-  arrival_hour: 14,
-  chief_complaint: "chest_pain",
-  systolic_bp: 130,
-  heart_rate: 90,
-  temperature: 37.0,
-  spo2: 96,
-};
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f4f6f8;
+  color: #1f2933;
+}
 
-const complaints = [
-  { value: "chest_pain", label: "Chest Pain" },
-  { value: "abdominal_pain", label: "Abdominal Pain" },
-  { value: "dyspnea", label: "Dyspnea (Breathing Difficulty)" },
-  { value: "fever", label: "Fever" },
-  { value: "injury", label: "Injury" },
-  { value: "neuro", label: "Neurological" },
-  { value: "other", label: "Other" },
-];
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
 
-export default function App() {
-  const [form, setForm] = useState(initialForm);
-  const [result, setResult] = useState(null);
+.app-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
 
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: name === "chief_complaint" ? value : Number(value),
-    }));
+.app-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #0b5394;
+}
+
+.subtitle {
+  color: #52606d;
+  margin-top: 0.4rem;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 800px) {
+  .layout {
+    grid-template-columns: 1fr;
   }
+}
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    // Placeholder — API call will be added in Block 3.2
-    setResult({
-      admission_probability: 0.0,
-      recommendation: "API call not wired yet (Block 3.2)",
-      model_version: "placeholder",
-    });
-  }
+.panel {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
 
-  return (
-    <div className="app">
-      <header className="app-header">
-        <h1>ED Admission Predictor</h1>
-        <p className="subtitle">
-          Predict admission probability and support bed planning
-        </p>
-      </header>
+.panel h2 {
+  margin-top: 0;
+  font-size: 1.15rem;
+  color: #0b5394;
+  border-bottom: 1px solid #e4e7eb;
+  padding-bottom: 0.6rem;
+}
 
-      <div className="layout">
-        {/* Form panel */}
-        <form className="panel form-panel" onSubmit={handleSubmit}>
-          <h2>Patient Intake</h2>
+.field {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
 
-          <div className="field">
-            <label>Age</label>
-            <input
-              type="number"
-              name="age"
-              min="0"
-              max="120"
-              value={form.age}
-              onChange={handleChange}
-              required
-            />
-          </div>
+.field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  color: #3e4c59;
+}
 
-          <div className="field">
-            <label>Triage Level (1 = most urgent, 5 = least)</label>
-            <select
-              name="triage_level"
-              value={form.triage_level}
-              onChange={handleChange}
-            >
-              {[1, 2, 3, 4, 5].map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select>
-          </div>
+.field input,
+.field select {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #cbd2d9;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
 
-          <div className="field">
-            <label>Arrival Hour (0–23)</label>
-            <input
-              type="number"
-              name="arrival_hour"
-              min="0"
-              max="23"
-              value={form.arrival_hour}
-              onChange={handleChange}
-            />
-          </div>
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: #0b5394;
+  box-shadow: 0 0 0 2px rgba(11, 83, 148, 0.15);
+}
 
-          <div className="field">
-            <label>Chief Complaint</label>
-            <select
-              name="chief_complaint"
-              value={form.chief_complaint}
-              onChange={handleChange}
-            >
-              {complaints.map((c) => (
-                <option key={c.value} value={c.value}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
-          </div>
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
 
-          <div className="field-row">
-            <div className="field">
-              <label>Systolic BP</label>
-              <input
-                type="number"
-                name="systolic_bp"
-                value={form.systolic_bp}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="field">
-              <label>Heart Rate</label>
-              <input
-                type="number"
-                name="heart_rate"
-                value={form.heart_rate}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
+.submit-btn {
+  width: 100%;
+  padding: 0.7rem;
+  background: #0b5394;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
 
-          <div className="field-row">
-            <div className="field">
-              <label>Temperature (°C)</label>
-              <input
-                type="number"
-                step="0.1"
-                name="temperature"
-                value={form.temperature}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="field">
-              <label>SpO₂ (%)</label>
-              <input
-                type="number"
-                name="spo2"
-                value={form.spo2}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
+.submit-btn:hover {
+  background: #094074;
+}
 
-          <button type="submit" className="submit-btn">
-            Predict Admission
-          </button>
-        </form>
+.result-content {
+  text-align: center;
+}
 
-        {/* Result panel */}
-        <div className="panel result-panel">
-          <h2>Prediction Result</h2>
+.probability-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1rem 0;
+}
 
-          {result ? (
-            <div className="result-content">
-              <div className="probability-display">
-                <span className="probability-value">
-                  {(result.admission_probability * 100).toFixed(1)}%
-                </span>
-                <span className="probability-label">
-                  Admission Probability
-                </span>
-              </div>
-              <div className="recommendation">
-                <strong>Recommendation:</strong> {result.recommendation}
-              </div>
-              <div className="model-version">
-                Model: {result.model_version}
-              </div>
-            </div>
-          ) : (
-            <p className="empty-state">
-              Enter patient details and click Predict to see results.
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+.probability-value {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #0b5394;
+}
+
+.probability-label {
+  font-size: 0.85rem;
+  color: #52606d;
+}
+
+.recommendation {
+  background: #f0f4f8;
+  padding: 0.8rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  margin-bottom: 0.8rem;
+}
+
+.model-version {
+  font-size: 0.8rem;
+  color: #9aa5b1;
+}
+
+.empty-state {
+  color: #9aa5b1;
+  text-align: center;
+  padding: 2rem 0;
 }
