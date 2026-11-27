@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { predictAdmission } from "./api";
 import "./App.css";
 
 const initialForm = {
@@ -25,6 +26,8 @@ const complaints = [
 export default function App() {
   const [form, setForm] = useState(initialForm);
   const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -34,13 +37,20 @@ export default function App() {
     }));
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    setResult({
-      admission_probability: 0.0,
-      recommendation: "API call not wired yet (Block 3.2)",
-      model_version: "placeholder",
-    });
+    setLoading(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      const data = await predictAdmission(form);
+      setResult(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -154,15 +164,23 @@ export default function App() {
             </div>
           </div>
 
-          <button type="submit" className="submit-btn">
-            Predict Admission
+          <button type="submit" className="submit-btn" disabled={loading}>
+            {loading ? "Predicting..." : "Predict Admission"}
           </button>
         </form>
 
         <div className="panel result-panel">
           <h2>Prediction Result</h2>
 
-          {result ? (
+          {loading && <p className="empty-state">Predicting...</p>}
+
+          {error && (
+            <p className="empty-state" style={{ color: "#b91c1c" }}>
+              Error: {error}
+            </p>
+          )}
+
+          {!loading && !error && result && (
             <div className="result-content">
               <div className="probability-display">
                 <span className="probability-value">
@@ -179,7 +197,9 @@ export default function App() {
                 Model: {result.model_version}
               </div>
             </div>
-          ) : (
+          )}
+
+          {!loading && !error && !result && (
             <p className="empty-state">
               Enter patient details and click Predict to see results.
             </p>
